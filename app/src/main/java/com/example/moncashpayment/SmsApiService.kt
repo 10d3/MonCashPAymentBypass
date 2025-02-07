@@ -5,6 +5,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface SmsApiService {
-    @POST("transactions")
+    @POST("payment")
     suspend fun sendSmsToBackend(@Body transaction: ParsedMonCashSms): Response<ApiResponse>
 }

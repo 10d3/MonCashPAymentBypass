@@ -92,7 +92,7 @@ class SmsReceiver(
                 amount = amount.replace(",", ""),  // Removes commas from formatted numbers
                 senderNumber = senderNumber,
                 txnId = txnId,
-                provider = "Mon Cash ($sender)"
+                provider = "MonCash ($sender)"
             )
         }
     }
@@ -123,7 +123,7 @@ class SmsReceiver(
             onSmsReceived(parsedSms)
         }
 
-        val backendUrl = preferences.getString("backend_url", "") ?: ""
+        val backendUrl = preferences.getString("backend_url", "http://localhost:3000/api/") ?: ""
         if (backendUrl.isNotEmpty()) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
