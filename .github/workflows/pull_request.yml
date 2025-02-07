@@ -25,3 +25,16 @@ jobs:
 
     - name: Run unit test
       run: ./gradlew clean testDebug
+
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+    - run : flutter pub get
+    - run : flutter build apk --release --split-per-abi
+
+    - name: Push to Releases
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "build/app/outputs/apk/release/*"
+        tag: v.0.0.1
+        token: ${{ secrets.TOKEN}}
