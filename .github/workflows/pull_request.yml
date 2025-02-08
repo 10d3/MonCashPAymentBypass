@@ -1,9 +1,7 @@
-name: Run test
+name: Build and Release APK
 
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
 
 jobs:
@@ -11,7 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Decode Keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > moncashPayment.jks
 
       - name: Setup JDK 17
         uses: actions/setup-java@v4
@@ -20,18 +22,18 @@ jobs:
           java-version: 17
           cache: 'gradle'
 
-      - name: Grant execute permissions for gradlew
-        run: chmod +x gradlew  # Use this if gradlew is in the root directory
+      - name: Grant execute permissions for Gradle
+        run: chmod +x gradlew
 
-      - name: Run unit tests
-        run: ./gradlew clean testDebug
+      - name: Build Signed APK
+        run: ./gradlew assembleRelease
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Build APK
-        run: ./gradlew assembleRelease  # Builds the release APK
-
-      - name: Push to Releases
-        uses: ncipollo/release-action@v1
+      - name: Upload APK as Artifact
+        uses: actions/upload-artifact@v3
         with:
-          artifacts: "app/build/outputs/apk/release/*.apk"  # Standard Android APK path
-          tag: v.0.0.1
-          token: ${{ secrets.TOKEN }}
+          name: signed-apk
+          path: app/build/outputs/apk/release/*.apk

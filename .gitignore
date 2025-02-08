@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+moncashPayment.jks
+/moncashPayment.jks
