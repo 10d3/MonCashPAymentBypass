@@ -41,6 +41,13 @@ android {
         }
     }
 
+    // Add this at the bottom of your app/build.gradle.kts file
+    tasks.register("printVersionName") {
+        doLast {
+            println(android.defaultConfig.versionName)
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
