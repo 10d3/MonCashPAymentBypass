@@ -17,7 +17,7 @@ class SmsReceiver(
 
     // Updated regex patterns with better matching
     private val monCashPattern = Regex(
-        """You have received (?:G)?([\d,]+(?:\.\d{2})?) with MonCash from (\d+). Txn ID: (\d+)""",
+        """Vous avez recu (?:G)?([\d,]+(?:\.\d{2})?) de (\d+) par MonCash\. Txn ID: (\d+)""",
         RegexOption.IGNORE_CASE
     )
 
