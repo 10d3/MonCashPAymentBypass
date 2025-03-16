@@ -17,12 +17,12 @@ class SmsReceiver(
 
     // Updated regex patterns with better matching
     private val monCashPattern = Regex(
-        """Vous avez recu (?:G)?([\d,]+(?:\.\d{2})?) de (\d+) par MonCash\. Txn ID: (\d+)""",
+        """You have received (?:G)?([\d,]+(?:\.\d{2})?) with MonCash from (\d+). Txn ID: (\d+)""",
         RegexOption.IGNORE_CASE
     )
 
     private val natCashPattern = Regex(
-        """resevwa\s([\d,]+)\sHTG\snan\s.*?(\d{8,15})\s.*?Transcode:\s*(\d+)""",
+        """Vous avez reçu (\d+) HTG de .+?(\d{8}) .+? TransCode: (\d+)""",
         RegexOption.IGNORE_CASE
     )
 
