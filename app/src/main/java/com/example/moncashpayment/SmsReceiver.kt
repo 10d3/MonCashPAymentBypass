@@ -22,7 +22,7 @@ class SmsReceiver(
     )
 
     private val natCashPattern = Regex(
-        """Vous avez reçu (\d+) HTG de .+?(\d{8}) .+? TransCode: (\d+)""",
+        """Vous avez re.u (\d+) HTG de .+?(\d{8}).+?TransCode: (\d+)""",
         RegexOption.IGNORE_CASE
     )
 
@@ -56,25 +56,42 @@ class SmsReceiver(
 
     private fun handleNatCash(messageBody: String, sender: String) {
         try {
-            val matchResult = natCashPattern.find(messageBody)
+            Log.d("SmsReceiver", "Attempting to parse NatCash message: $messageBody")
 
-            if (matchResult != null) {
-                val (rawAmount, senderNumber, txnId) = matchResult.destructured
+            // Extract amount - using a more flexible pattern that works with encoding issues
+            val amountPattern = Regex("""avez re.{1,3}u (\d+) HTG""", RegexOption.IGNORE_CASE)
+            val amountMatch = amountPattern.find(messageBody)
+            val amount = amountMatch?.groupValues?.get(1)
 
-                // Clean the amount by removing commas
-                val cleanAmount = rawAmount.replace(",", "")
+            // Extract phone number - looking for 8 digits
+            val phonePattern = Regex("""(\d{8})""")
+            val phoneMatch = phonePattern.find(messageBody)
+            val phone = phoneMatch?.groupValues?.get(1)
 
+            // Extract transaction code
+            val txnPattern = Regex("""TransCode: (\d+)""", RegexOption.IGNORE_CASE)
+            val txnMatch = txnPattern.find(messageBody)
+            val txnId = txnMatch?.groupValues?.get(1)
+
+            Log.d("SmsReceiver", "Extracted - Amount: $amount, Phone: $phone, TxnId: $txnId")
+
+            if (amount != null && phone != null && txnId != null) {
                 processValidSms(
-                    amount = cleanAmount,
-                    senderNumber = senderNumber,
+                    amount = amount,
+                    senderNumber = phone,
                     txnId = txnId,
-                    provider = "NatCash ($sender)"
+                    provider = "Natcash ($sender)"
                 )
+                Log.d("SmsReceiver", "Successfully processed NatCash message")
             } else {
-                Log.e("SmsReceiver", "Failed to parse NatCash message")
+                Log.e("SmsReceiver", "Failed to extract all required fields from NatCash message")
+                if (amount == null) Log.e("SmsReceiver", "Amount extraction failed")
+                if (phone == null) Log.e("SmsReceiver", "Phone extraction failed")
+                if (txnId == null) Log.e("SmsReceiver", "Transaction ID extraction failed")
             }
         } catch (e: Exception) {
             Log.e("SmsReceiver", "NatCash processing error", e)
+            e.printStackTrace()
         }
     }
 
